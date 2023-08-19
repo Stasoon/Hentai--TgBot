@@ -11,8 +11,11 @@ async def get_notsubbed_channels_markup_or_none(bot: Bot, user_id: int) -> Inlin
     not_subbed_channels_data = []
 
     for chan_data in get_channels_full_data():
-        if not await __check_status_is_member(bot, chan_data.get('id'), user_id):
-            not_subbed_channels_data.append(chan_data)
+        try:
+            if not await __check_status_is_member(bot, chan_data.get('id'), user_id):
+                not_subbed_channels_data.append(chan_data)
+        except (Unauthorized, ChatNotFound, BotKicked):
+            continue
 
     return Keyboards.get_not_subbed_markup(not_subbed_channels_data)
 

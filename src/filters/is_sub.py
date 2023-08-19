@@ -18,8 +18,11 @@ class IsSubFilter(BoundFilter):
 
     async def check(self, callback: CallbackQuery):
         for channel_id in get_channel_ids():
-            if not await self.__check_status_is_member(callback.bot, channel_id, callback.from_user.id):
-                return self.is_sub is False
+            try:
+                if not await self.__check_status_is_member(callback.bot, channel_id, callback.from_user.id):
+                    return self.is_sub is False
+            except (Unauthorized, ChatNotFound, BotKicked):
+                return self.is_sub is True
         return self.is_sub is True
 
     @staticmethod
